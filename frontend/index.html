@@ -1,41 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zoológico</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoológico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container">
-    <h1>Registrar Animal</h1>
 
-    <form id="animalForm">
-        <input type="text" id="nombre" placeholder="Nombre" required>
-        <input type="number" id="edad" placeholder="Edad" required min="1">
+<div class="layout">
 
-        <select id="tipo" required>
-            <option value="LEON">León</option>
-            <option value="ELEFANTE">Elefante</option>
-            <option value="MONO">Mono</option>
-        </select>
+  <!-- COLUMNA IZQUIERDA: Formulario -->
+  <aside class="panel panel--form">
+    <header class="panel__header">
+      <span class="panel__tag">Factory + Bridge + Chain</span>
+      <h1>Registrar<br/>Animal</h1>
+    </header>
 
-        <select id="habitat" required>
-            <option value="SABANA">Sabana</option>
-            <option value="SELVA">Selva</option>
-            <option value="ACUARIO">Acuario</option>
-        </select>
-
-        <button type="submit">Registrar</button>
-    </form>
-
-    <div class="acciones">
-        <button type="button" id="btnListar">Listar Animales</button>
-        <button type="button" id="btnOrdenar">Ordenar por edad</button>
-        <button type="button" id="btnLimpiar">Limpiar Lista</button>
+    <div class="field">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" placeholder="ej. Simba" autocomplete="off" />
     </div>
 
-    <ul id="lista"></ul>
+    <div class="field">
+      <label for="edad">Edad (años)</label>
+      <input type="number" id="edad" placeholder="ej. 5" min="1" />
+    </div>
+
+    <div class="field">
+      <label for="tipo">Tipo de animal <span class="badge">Factory</span></label>
+      <select id="tipo">
+        <option value="LEON">🦁 León</option>
+        <option value="ELEFANTE">🐘 Elefante</option>
+        <option value="MONO">🐒 Mono</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="habitat">Hábitat <span class="badge">Bridge</span></label>
+      <select id="habitat">
+        <option value="SABANA">🌾 Sabana</option>
+        <option value="SELVA">🌿 Selva</option>
+        <option value="ACUARIO">🌊 Acuario</option>
+      </select>
+    </div>
+
+    <!-- Cadena de responsabilidad visible -->
+    <div class="chain-section">
+      <p class="chain-label">Chain of Responsibility <span class="badge">validaciones</span></p>
+      <div class="chain">
+        <div class="chain__step" id="v-nombre" data-label="Nombre">
+          <span class="chain__icon">✓</span>
+          <span class="chain__name">ValidarNombre</span>
+        </div>
+        <div class="chain__arrow">→</div>
+        <div class="chain__step" id="v-edad" data-label="Edad">
+          <span class="chain__icon">✓</span>
+          <span class="chain__name">ValidarEdad</span>
+        </div>
+        <div class="chain__arrow">→</div>
+        <div class="chain__step" id="v-tipo" data-label="Tipo">
+          <span class="chain__icon">✓</span>
+          <span class="chain__name">ValidarTipo</span>
+        </div>
+        <div class="chain__arrow">→</div>
+        <div class="chain__step" id="v-habitat" data-label="Hábitat">
+          <span class="chain__icon">✓</span>
+          <span class="chain__name">ValidarHabitat</span>
+        </div>
+      </div>
+      <p class="chain-status" id="chainStatus"></p>
+    </div>
+
+    <button class="btn-registrar" id="btnRegistrar">Registrar Animal</button>
+  </aside>
+
+  <!-- COLUMNA DERECHA: Lista -->
+  <main class="panel panel--list">
+    <header class="panel__header panel__header--right">
+      <span class="panel__tag">Repositorio en memoria</span>
+      <h2>Animales<br/>Registrados</h2>
+      <div class="list-actions">
+        <button class="btn-action" id="btnListar">Listar</button>
+        <button class="btn-action" id="btnOrdenarEdad">↑ Edad</button>
+        <button class="btn-action" id="btnOrdenarNombre">A–Z</button>
+        <button class="btn-action btn-action--ghost" id="btnLimpiar">Limpiar</button>
+      </div>
+    </header>
+
+    <div class="animal-grid" id="animalGrid">
+      <div class="empty-state">
+        <span>🦒</span>
+        <p>Registra tu primer animal</p>
+      </div>
+    </div>
+  </main>
+
 </div>
 
 <script src="app.js"></script>
