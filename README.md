@@ -113,6 +113,18 @@ ValidarNombre          → nombre no vacío, solo letras, máx 30 caracteres
 
 ---
 
+## Diagramas UML
+
+### UML de Clases
+
+![alt text](images/umlClases.png)
+
+### UML de Secuencia
+
+![alt text](images/umlSecuencia.png)
+
+---
+
 ## Estructura del proyecto
 
 ```
