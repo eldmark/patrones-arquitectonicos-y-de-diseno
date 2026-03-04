@@ -11,7 +11,6 @@ const ANIMAL_META = {
   COCODRILO: { emoji: "🐊", sonido: "Gruñido" },
 };
 
-// Misma tabla de compatibilidad que ValidarCompatibilidad.java
 const COMPATIBILIDAD = {
   LEON:      ["SABANA", "DESIERTO"],
   ELEFANTE:  ["SABANA", "SELVA"],
@@ -29,6 +28,15 @@ const HABITAT_LABEL = {
   DESIERTO: "Desierto",
   MONTANA:  "Montaña",
 };
+
+// Descripción legible de cada validación para la notificación
+const STEP_DESCRIPTIONS = [
+  { id: "v-nombre",  name: "ValidarNombre",         desc: (d) => `Nombre "${d.nombre}" — solo letras, máx. 30 caracteres` },
+  { id: "v-edad",    name: "ValidarEdad",            desc: (d) => `Edad ${d.edad} años — rango válido (1–80)` },
+  { id: "v-tipo",    name: "ValidarTipo",            desc: (d) => `Tipo "${d.tipo}" — reconocido por el sistema` },
+  { id: "v-habitat", name: "ValidarHabitat",         desc: (d) => `Hábitat "${HABITAT_LABEL[d.habitat]}" — disponible en el zoológico` },
+  { id: "v-compat",  name: "ValidarCompatibilidad ★", desc: (d) => `${d.tipo} puede vivir en ${HABITAT_LABEL[d.habitat]} ✓` },
+];
 
 // ─── Hint de compatibilidad en tiempo real ────────────────────────────────────
 
@@ -67,7 +75,17 @@ document.querySelectorAll(".tooltip-trigger").forEach(trigger => {
 
     const rect = trigger.getBoundingClientRect();
     tooltip.style.top  = (rect.bottom + window.scrollY + 8) + "px";
-    tooltip.style.left = Math.min(rect.left, window.innerWidth - 320) + "px";
+
+    // Si el trigger está en el botón (bottom of page), mostrar arriba
+    const fromBottom = window.innerHeight - rect.bottom;
+    if (fromBottom < 250) {
+      tooltip.style.top = (rect.top + window.scrollY - 10) + "px";
+      tooltip.style.transform = "translateY(-100%)";
+    } else {
+      tooltip.style.transform = "";
+    }
+
+    tooltip.style.left = Math.min(Math.max(rect.left, 8), window.innerWidth - 320) + "px";
     tooltip.classList.add("visible");
     activeTooltip = tooltip;
   });
@@ -78,6 +96,38 @@ document.querySelectorAll(".tooltip-trigger").forEach(trigger => {
     }, 200);
   });
 });
+
+// ─── Notificación de chain completada ────────────────────────────────────────
+
+const notification  = document.getElementById("chainNotification");
+const notifList     = document.getElementById("notifList");
+let   notifTimeout  = null;
+
+document.getElementById("notifClose").addEventListener("click", hideNotification);
+
+function showChainNotification(data) {
+  notifList.innerHTML = "";
+
+  STEP_DESCRIPTIONS.forEach(step => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="step-check">✓</span>
+      <span><span class="step-name">${step.name}</span> — ${step.desc(data)}</span>
+    `;
+    notifList.appendChild(li);
+  });
+
+  notification.classList.add("visible");
+
+  // Auto-cerrar después de 6 segundos
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(hideNotification, 20000);
+}
+
+function hideNotification() {
+  notification.classList.remove("visible");
+  clearTimeout(notifTimeout);
+}
 
 // ─── Chain of Responsibility: animación de los 5 eslabones ───────────────────
 
@@ -93,6 +143,7 @@ function resetChain() {
 
 async function runChainAnimation(nombre, edad, tipo, habitat) {
   resetChain();
+  hideNotification();
 
   const validaciones = [
     {
@@ -135,9 +186,9 @@ async function runChainAnimation(nombre, edad, tipo, habitat) {
   ];
 
   for (const v of validaciones) {
-    const el       = document.getElementById(v.id);
-    const base     = v.id === "v-compat" ? "chain__step chain__step--highlight" : "chain__step";
-    el.className   = base + " pending";
+    const el   = document.getElementById(v.id);
+    const base = v.id === "v-compat" ? "chain__step chain__step--highlight" : "chain__step";
+    el.className = base + " pending";
     await delay(320);
 
     const error = v.check();
@@ -157,6 +208,10 @@ async function runChainAnimation(nombre, edad, tipo, habitat) {
   }
 
   setChainStatus("✓ Todas las validaciones pasaron — registrando…", "ok");
+
+  // Mostrar notificación con el resumen de validaciones
+  showChainNotification({ nombre, edad: parseInt(edad), tipo, habitat });
+
   return true;
 }
 
@@ -170,7 +225,10 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─── Registrar ────────────────────────────────────────────────────────────────
 
-document.getElementById("btnRegistrar").addEventListener("click", async () => {
+document.getElementById("btnRegistrar").addEventListener("click", async (e) => {
+  // Evitar que el click en el badge-tooltip dispare el registro
+  if (e.target.classList.contains("tooltip-trigger")) return;
+
   const nombre  = document.getElementById("nombre").value;
   const edad    = document.getElementById("edad").value;
   const tipo    = tipoSelect.value;
@@ -194,9 +252,11 @@ document.getElementById("btnRegistrar").addEventListener("click", async () => {
       await listar();
     } else {
       const msg = await response.text();
+      hideNotification();
       setChainStatus("✗ Servidor: " + msg, "err");
     }
   } catch {
+    hideNotification();
     setChainStatus("✗ No se pudo conectar al servidor (¿está corriendo Spring Boot?)", "err");
   }
 });

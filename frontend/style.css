@@ -401,6 +401,112 @@ body {
 .empty-state span { font-size: 3rem; }
 .empty-state p { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 
+/* Badge dentro del botón registrar */
+.btn-badge {
+  pointer-events: auto;
+  font-size: 9px;
+  padding: 2px 7px;
+  vertical-align: middle;
+  margin-left: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Chain notification ─────────────────────────────────────── */
+.chain-notification {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 340px;
+  background: #1c2128;
+  border: 1px solid var(--success);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 2000;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  animation: notifIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chain-notification.visible { display: flex; }
+
+@keyframes notifIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.chain-notification__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chain-notification__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(63, 185, 80, 0.15);
+  border: 1px solid var(--success);
+  border-radius: 50%;
+  color: var(--success);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.chain-notification__header strong {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--success);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.chain-notification__close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+.chain-notification__close:hover { color: var(--text); }
+
+.chain-notification__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chain-notification__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.chain-notification__list li .step-check {
+  color: var(--success);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.chain-notification__list li .step-name {
+  color: var(--text);
+  font-weight: 500;
+}
+
 /* ─── Badge variants ─────────────────────────────────────────── */
 .badge--teal {
   background: rgba(78, 201, 176, 0.12);
@@ -412,6 +518,24 @@ body {
   background: rgba(188, 140, 255, 0.12);
   color: #bc8cff;
   border-color: rgba(188, 140, 255, 0.3);
+}
+
+.badge--orange {
+  background: rgba(255, 160, 80, 0.12);
+  color: #ffa050;
+  border-color: rgba(255, 160, 80, 0.3);
+}
+
+.badge--green {
+  background: rgba(63, 185, 80, 0.12);
+  color: var(--success);
+  border-color: rgba(63, 185, 80, 0.3);
+}
+
+.badge--black {
+  background: rgba(63, 185, 80, 0.12);
+  color: #ffffff;
+  border-color: rgba(63, 185, 80, 0.3);
 }
 
 /* ─── Tooltip trigger ────────────────────────────────────────── */

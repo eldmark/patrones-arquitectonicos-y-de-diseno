@@ -19,7 +19,10 @@
     </header>
 
     <div class="field">
-      <label for="nombre">Nombre</label>
+      <label for="nombre">
+        Nombre
+        <span class="badge badge--orange tooltip-trigger" data-tooltip="dto">DTO ⓘ</span>
+      </label>
       <input type="text" id="nombre" placeholder="ej. Simba" autocomplete="off" maxlength="30" />
       <span class="field-hint">Solo letras · máx. 30 caracteres</span>
     </div>
@@ -96,7 +99,10 @@
       <p class="chain-status" id="chainStatus"></p>
     </div>
 
-    <button class="btn-registrar" id="btnRegistrar">Registrar Animal</button>
+    <button class="btn-registrar" id="btnRegistrar">
+      Registrar Animal
+      <span class="badge badge--black tooltip-trigger btn-badge" data-tooltip="clienteservidor">Cliente–Servidor ⓘ</span>
+    </button>
   </aside>
 
   <!-- COLUMNA DERECHA: Lista -->
@@ -138,6 +144,47 @@
   <strong>Chain of Responsibility</strong>
   <p>Cada eslabón valida una regla y pasa al siguiente. Si falla, corta la cadena. El último eslabón tiene la regla de negocio real: ¿puede este animal vivir en este hábitat?</p>
   <code class="code-block">ValidarNombre<br/>  → ValidarEdad<br/>    → ValidarTipo<br/>      → ValidarHabitat<br/>        → ValidarCompatibilidad ★</code>
+</div>
+
+<div class="tooltip" id="tooltip-dto">
+  <strong>DTO — Data Transfer Object</strong>
+  <p>El formulario empaqueta los datos en un objeto plano antes de enviarlo al servidor. El DTO no tiene lógica, solo transporta.</p>
+  <code class="code-block">// Lo que viaja en el POST:
+{
+  "nombre": "Simba",
+  "edad": 5,
+  "tipo": "LEON",
+  "habitat": "SABANA"
+}
+
+// En Java:
+class AnimalDTO {
+  String nombre, tipo, habitat;
+  int edad;
+}</code>
+</div>
+
+<div class="tooltip" id="tooltip-clienteservidor">
+  <strong>Cliente–Servidor</strong>
+  <p>El frontend (HTML/JS) y el backend (Spring Boot) son procesos separados. El cliente envía peticiones HTTP y el servidor responde con JSON. Nunca comparten memoria.</p>
+  <code class="code-block">Cliente (puerto :5500)
+  POST /api/animales → JSON
+  GET  /api/animales → [ ]
+  GET  /api/animales/ordenar
+
+Servidor (puerto :8080)
+  @RestController
+  @CrossOrigin(origins = "*")</code>
+</div>
+
+<!-- Notificación de cadena completada -->
+<div class="chain-notification" id="chainNotification">
+  <div class="chain-notification__header">
+    <span class="chain-notification__icon">✓</span>
+    <strong>Chain of Responsibility — validaciones completadas</strong>
+    <button class="chain-notification__close" id="notifClose">✕</button>
+  </div>
+  <ul class="chain-notification__list" id="notifList"></ul>
 </div>
 
 <script src="app.js"></script>
